@@ -9,7 +9,15 @@ namespace WarehouseApp.Domain
         /// <summary>
         /// Список коробок на паллете.
         /// </summary>
-        public List<Box> Boxes { get; init; }
+        public List<Box> Boxes { get; private set; }
+
+        /// <summary>
+        /// Пустой конструктор для EF Core.
+        /// </summary>
+        protected Pallet()
+        {
+            Boxes = [];
+        }
 
         /// <summary>
         /// Создаёт паллету с указанными размерами и списком коробок.
