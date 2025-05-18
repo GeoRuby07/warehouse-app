@@ -1,5 +1,3 @@
-using System.Reflection.Emit;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -12,8 +10,22 @@ namespace WarehouseApp.Infrastructure {
         public DbSet<Box> Boxes { get; set; }
         public DbSet<Pallet> Pallets { get; set; }
 
+        public WarehouseContext(DbContextOptions<WarehouseContext> options)
+    : base(options)
+        {
+        }
+
+        public WarehouseContext()
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite($"Data Source={DbFileName}");
+        {
+            if (!options.IsConfigured)
+            {
+                options.UseSqlite($"Data Source={DbFileName}");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder model)
         {
