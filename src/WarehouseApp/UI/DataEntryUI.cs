@@ -1,19 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-
 using Spectre.Console;
 
 using WarehouseApp.Domain;
-using WarehouseApp.Infrastructure;
 using WarehouseApp.Services;
 
 namespace WarehouseApp.UI
 {
     public static class DataEntryUI
     {
-        public static void DataEntryMenu(WarehouseService service)
+        public static void DataEntryMenu(IWarehouseService service)
         {
-            var ctx = service.GetDbContext();
-
             while (true)
             {
                 var sub = AnsiConsole.Prompt(
@@ -21,16 +16,17 @@ namespace WarehouseApp.UI
                         .Title("Добавление данных:")
                         .AddChoices("1. Создать коробку", "2. Создать паллету", "0. Назад"));
 
-                if (sub.StartsWith('0')) break;
-                switch (sub[0])
-                {
-                    case '1': CreateBox(ctx); break;
-                    case '2': CreatePallet(ctx); break;
-                }
+                if (sub.StartsWith("0"))
+                    break;
+
+                if (sub.StartsWith("1"))
+                    CreateBox(service);
+                else
+                    CreatePallet(service);
             }
         }
 
-        private static void CreateBox(WarehouseContext ctx)
+        private static void CreateBox(IWarehouseService service)
         {
             AnsiConsole.MarkupLine("[underline]Создание коробки[/]");
             var w = PromptDecimal("Ширина (см):");
@@ -54,12 +50,11 @@ namespace WarehouseApp.UI
                 ManufactureDate = mfg
             };
 
-            ctx.Boxes.Add(box);
-            ctx.SaveChanges();
+            box = service.CreateBox(box);
             AnsiConsole.MarkupLine($"[green]Коробка создана, Id: {box.Id}[/]");
         }
 
-        private static void CreatePallet(WarehouseContext ctx)
+        private static void CreatePallet(IWarehouseService service)
         {
             AnsiConsole.MarkupLine("[underline]Создание паллеты[/]");
 
@@ -67,17 +62,8 @@ namespace WarehouseApp.UI
             var h = PromptDecimal("Высота паллеты (см):");
             var d = PromptDecimal("Глубина паллеты (см):");
 
-            var boxSummaries = ctx.Boxes
-                .AsNoTracking()
-                .Where(b => b.PalletId == null)
-                .Select(b => new
-                {
-                    b.Id,
-                    Text = $"{b.Id} ({b.Width}cm x {b.Height}cm x {b.Depth}cm, exp:{b.ExpirationDate:yyyy-MM-dd})"
-                })
-                .ToList();
-
-            if (boxSummaries.Count == 0)
+            var available = service.GetAvailableBoxes().ToList();
+            if (!available.Any())
             {
                 AnsiConsole.MarkupLine("[red]Нет свободных коробок для паллеты![/]");
                 return;
@@ -87,32 +73,23 @@ namespace WarehouseApp.UI
                 new MultiSelectionPrompt<Guid>()
                     .Title("Выберите коробки для паллеты:")
                     .PageSize(10)
-                    .AddChoices(boxSummaries.Select(x => x.Id))
-                    .UseConverter(id => boxSummaries.First(x => x.Id == id).Text)
+                    .AddChoices(available.Select(b => b.Id))
+                    .UseConverter(id =>
+                    {
+                        var b = available.First(x => x.Id == id);
+                        return $"{b.Id} ({b.Width}cm x {b.Height}cm x {b.Depth}cm, exp:{b.ExpirationDate:yyyy-MM-dd})";
+                    }
+                    )
             );
 
-            if (selectedIds.Count == 0)
+            if (!selectedIds.Any())
             {
                 AnsiConsole.MarkupLine("[yellow]Ни одна коробка не выбрана — отмена.[/]");
                 return;
             }
 
-            // 3) Фактически загружаем только выбранные коробки
-            var boxes = ctx.Boxes
-                .Where(b => selectedIds.Contains(b.Id))
-                .ToList();
-
-            try
-            {
-                var pallet = new Pallet(w, h, d, boxes);
-                ctx.Pallets.Add(pallet);
-                ctx.SaveChanges();
-                AnsiConsole.MarkupLine($"[green]Паллета создана, Id: {pallet.Id}[/]");
-            }
-            catch (Exception ex)
-            {
-                AnsiConsole.MarkupLine($"[red]Ошибка: {ex.Message}[/]");
-            }
+            var pallet = service.CreatePallet(w, h, d, selectedIds);
+            AnsiConsole.MarkupLine($"[green]Паллета создана, Id: {pallet.Id}[/]");
         }
 
         private static decimal PromptDecimal(string prompt) =>

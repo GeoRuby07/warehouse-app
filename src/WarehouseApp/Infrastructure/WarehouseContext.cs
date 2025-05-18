@@ -5,8 +5,7 @@ using WarehouseApp.Domain;
 
 namespace WarehouseApp.Infrastructure
 {
-    public class WarehouseContext : DbContext
-    {
+    public class WarehouseContext : DbContext, IWarehouseContext {
         private const string DbFileName = "warehouse.db";
 
         public DbSet<Box> Boxes { get; set; }

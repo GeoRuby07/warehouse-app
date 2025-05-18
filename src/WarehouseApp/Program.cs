@@ -11,8 +11,9 @@ namespace WarehouseApp
         public static void Main()
         {
             using var db = new WarehouseContext();
-            var service = new WarehouseService(db);
             db.Database.Migrate();
+            IWarehouseService service = new WarehouseService(db);
+
             ConsoleUI.Run(service);
         }
     }

@@ -13,7 +13,7 @@ namespace WarehouseApp.UI
             "0. Выход"
         ];
 
-        public static void Run(WarehouseService service)
+        public static void Run(IWarehouseService service)
         {
             while (true)
             {

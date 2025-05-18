@@ -5,14 +5,14 @@ using WarehouseApp.Infrastructure;
 
 namespace WarehouseApp.Services
 {
-    public class WarehouseService(WarehouseContext dbContext)
+    public class WarehouseService(IWarehouseContext dbContext) : IWarehouseService
     {
-        private readonly WarehouseContext _db = dbContext;
+        private readonly IWarehouseContext _db = dbContext;
 
         /// <summary>
         /// Доступ к контексту для UI.
         /// </summary>
-        public WarehouseContext GetDbContext() => _db;
+        public IWarehouseContext GetDbContext() => _db;
 
         /// <summary>
         /// Группирует паллеты по сроку годности, сортирует группы и паллеты внутри по весу.
@@ -63,6 +63,35 @@ namespace WarehouseApp.Services
                     p.Boxes.Sum(b => b.Width * b.Height * b.Depth)
                   + (p.Width * p.Height * p.Depth)
                 );
+        }
+
+        public IEnumerable<Box> GetAvailableBoxes()
+        {
+            return [.. _db.Boxes
+                      .Where(b => b.PalletId == null)
+                      .AsNoTracking()];
+        }
+
+        public Box CreateBox(Box box)
+        {
+            _db.Boxes.Add(box);
+            _db.SaveChanges();
+            return box;
+        }
+
+        public Pallet CreatePallet(decimal width, decimal height, decimal depth, IEnumerable<Guid> boxIds)
+        {
+            // Загружаем сами Box по id
+            var boxes = _db.Boxes
+                          .Where(b => boxIds.Contains(b.Id))
+                          .ToList();
+
+            var pallet = new Pallet(width, height, depth, boxes);
+            _db.Pallets.Add(pallet);
+
+            // EF автоматически установит PalletId у коробок
+            _db.SaveChanges();
+            return pallet;
         }
     }
 }

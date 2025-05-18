@@ -6,7 +6,7 @@ namespace WarehouseApp.UI
 {
     public static class DisplayUI
     {
-        public static void ShowByExpiration(WarehouseService svc)
+        public static void ShowByExpiration(IWarehouseService svc)
         {
             AnsiConsole.MarkupLine("[underline]Паллеты по сроку годности[/]\n");
 
@@ -33,7 +33,7 @@ namespace WarehouseApp.UI
             }
         }
 
-        public static void ShowTop3(WarehouseService svc)
+        public static void ShowTop3(IWarehouseService svc)
         {
             AnsiConsole.MarkupLine("[underline]Топ-3 паллеты[/]\n");
 
