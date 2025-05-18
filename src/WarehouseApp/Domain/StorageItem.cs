@@ -8,7 +8,7 @@ namespace WarehouseApp.Domain
         public decimal Width { get; init; }
         public decimal Height { get; init; }
         public decimal Depth { get; init; }
-        public decimal Weight { get; protected set; }
+        public decimal Weight { get; init; }
 
         /// <summary>
         /// Объём: Width × Height × Depth

@@ -6,6 +6,11 @@ namespace WarehouseApp.Services {
         private readonly WarehouseContext _db = dbContext;
 
         /// <summary>
+        /// Доступ к контексту для UI.
+        /// </summary>
+        public WarehouseContext GetDbContext() => _db;
+
+        /// <summary>
         /// Группирует паллеты по сроку годности, сортирует группы и паллеты внутри по весу.
         /// </summary>
         public IEnumerable<IGrouping<DateTime, Pallet>> GroupByExpiration()
