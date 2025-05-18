@@ -20,6 +20,10 @@
     <ItemGroup>
 	    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0" PrivateAssets="all" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Application\Services\" />
+    </ItemGroup>
     <PropertyGroup>
 	    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     </PropertyGroup>
