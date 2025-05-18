@@ -11,7 +11,7 @@ namespace WarehouseApp.Domain
         public decimal Weight { get; init; }
 
         /// <summary>
-        /// Объём: Width × Height × Depth
+        /// Объём: Width x Height x Depth
         /// </summary>
         public virtual decimal Volume => Width * Height * Depth;
 

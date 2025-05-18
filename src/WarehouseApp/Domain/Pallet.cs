@@ -42,8 +42,8 @@ namespace WarehouseApp.Domain
                     box.Depth > Depth)
                 {
                     throw new ArgumentException(
-                        $"Box {box.Id} ({box.Width}×{box.Depth}) " +
-                        $"does not fit into pallet {Width}×{Depth}");
+                        $"Box {box.Id} ({box.Width} x {box.Depth}) " +
+                        $"does not fit into pallet {Width} x {Depth}");
                 }
             }
 
