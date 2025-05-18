@@ -32,7 +32,10 @@ jobs:
         run: |
           dotnet tool install --global dotnet-ef
           export PATH="$HOME/.dotnet/tools:$PATH"
-          dotnet ef migrations script --project "src/WarehouseApp" --idempotent
+          dotnet ef migrations script \
+            --project src/WarehouseApp \
+            --startup-project src/WarehouseApp \
+            --idempotent
 
       - name: Run unit tests
         run: dotnet test "WarehouseApp.Tests/WarehouseApp.Tests.csproj" --no-build --verbosity normal
