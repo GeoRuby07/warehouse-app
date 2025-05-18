@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 using WarehouseApp.Domain;
 using WarehouseApp.Infrastructure;
 
@@ -13,25 +15,60 @@ namespace WarehouseApp.Services {
         /// <summary>
         /// Группирует паллеты по сроку годности, сортирует группы и паллеты внутри по весу.
         /// </summary>
+
         public IEnumerable<IGrouping<DateTime, Pallet>> GroupByExpiration()
         {
-            // Группируем по сроку и сортируем группы по ключу (дате):
-            return _db.Pallets
-                      .ToList()
-                      .GroupBy(p => p.ExpirationDate)
-                      .OrderBy(g => g.Key);
+            var stats = _db.Pallets
+                .Where(p => p.Boxes.Any())
+                .Select(p => new
+                {
+                    Pallet = p,
+                    ExpirationMin = p.Boxes
+                        .Select(b => b.ExpirationDateInput ?? b.ManufactureDate!.Value.AddDays(100))
+                        .Min(),
+                    WeightCalc = p.Boxes.Sum(b => b.Weight) + 30m
+                })
+                .OrderBy(x => x.ExpirationMin)
+                .ThenBy(x => x.WeightCalc)
+                .AsEnumerable();
+
+            return stats
+                .GroupBy(x => x.ExpirationMin, x => x.Pallet);
         }
 
         /// <summary>
         /// Берёт 3 паллеты с наибольшим сроком годности (макс из коробок) и сортирует по возрастанию объёма.
         /// </summary>
+
         public IEnumerable<Pallet> GetTop3ByMaxBoxExpiration()
         {
-            return [.. _db.Pallets
-                      .ToList()
-                      .OrderByDescending(p => p.Boxes.Max(b => b.ExpirationDate))
-                      .Take(3)
-                      .OrderBy(p => p.Volume)];
+            var topIds = _db.Pallets
+                .Where(p => p.Boxes.Any())
+                .Select(p => new
+                {
+                    p.Id,
+                    MaxExpiry = p.Boxes
+                        .Select(b => b.ExpirationDateInput ?? b.ManufactureDate!.Value.AddDays(100))
+                        .Max(),
+                    VolumeCalc = p.Boxes.Sum(b => b.Width * b.Height * b.Depth)
+                                 + (p.Width * p.Height * p.Depth)
+                })
+                .OrderByDescending(x => x.MaxExpiry)
+                .ThenBy(x => x.VolumeCalc)
+                .Take(3)
+                .Select(x => x.Id)
+                .ToList();
+
+            var pallets = _db.Pallets
+                .Where(p => topIds.Contains(p.Id))
+                .Include(p => p.Boxes)
+                .AsNoTracking()
+                .ToList();   
+
+            return pallets
+                .OrderBy(p =>
+                    p.Boxes.Sum(b => b.Width * b.Height * b.Depth)
+                  + (p.Width * p.Height * p.Depth));
         }
     }
 }

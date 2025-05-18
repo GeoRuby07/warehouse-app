@@ -1,4 +1,7 @@
+using System.Reflection.Emit;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 using WarehouseApp.Domain;
 
@@ -27,6 +30,21 @@ namespace WarehouseApp.Infrastructure {
             model.Entity<Pallet>()
                  .Ignore(p => p.ExpirationDate)
                  .Ignore(p => p.Volume);
+
+            // Конвертер decimal <-> double
+            var decimalConverter = new ValueConverter<decimal, double>(
+                v => (double)v,
+                v => (decimal)v);
+
+            foreach (var entity in model.Model.GetEntityTypes())
+            {
+                foreach (var property in entity.GetProperties()
+                                              .Where(p => p.ClrType == typeof(decimal)))
+                {
+                    property.SetValueConverter(decimalConverter);
+                    property.SetColumnType("REAL");
+                }
+            }
         }
     }
 }
