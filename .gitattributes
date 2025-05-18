@@ -1,0 +1,10 @@
+# Ensure UTF-8 encoding for source and text files
+*.cs       text working-tree-encoding=UTF-8
+*.config   text working-tree-encoding=UTF-8
+*.json     text working-tree-encoding=UTF-8
+*.editorconfig text working-tree-encoding=UTF-8
+*.gitattributes text working-tree-encoding=UTF-8
+*.md       text working-tree-encoding=UTF-8
+
+# Default handling for all other files
+*          text=auto
