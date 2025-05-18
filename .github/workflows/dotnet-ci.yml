@@ -26,5 +26,14 @@ jobs:
       - name: Run code analysis
         run: dotnet build "src/WarehouseApp/WarehouseApp.csproj" --no-restore --configuration Release /p:EnableNETAnalyzers=true
 
+      - name: Generate EF Core migrations script (dry-run)
+        continue-on-error: true
+        working-directory: src/WarehouseApp
+        run: |
+          dotnet tool install --global dotnet-ef
+          export PATH="$HOME/.dotnet/tools:$PATH"
+          dotnet ef migrations script --idempotent
+
       - name: Run unit tests
-        run: dotnet test "warehouse-app.sln" --no-build --verbosity normal
+        working-directory: WarehouseApp.Tests
+        run: dotnet test --no-build --verbosity normal
