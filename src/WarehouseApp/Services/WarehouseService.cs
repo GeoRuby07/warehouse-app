@@ -22,7 +22,6 @@ namespace WarehouseApp.Services
         {
             var pallets = _db.Pallets
                                 .Include(p => p.Boxes)
-                                .AsNoTracking()
                                 .ToList();
 
             return pallets
