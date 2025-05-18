@@ -23,14 +23,14 @@ namespace WarehouseApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Depth")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Depth")
+                        .HasColumnType("REAL");
 
                     b.Property<DateTime?>("ExpirationDateInput")
                         .HasColumnType("DATE");
 
-                    b.Property<decimal>("Height")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Height")
+                        .HasColumnType("REAL");
 
                     b.Property<DateTime?>("ManufactureDate")
                         .HasColumnType("DATE");
@@ -38,11 +38,11 @@ namespace WarehouseApp.Migrations
                     b.Property<Guid?>("PalletId")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Weight")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Weight")
+                        .HasColumnType("REAL");
 
-                    b.Property<decimal>("Width")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Width")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
@@ -57,17 +57,17 @@ namespace WarehouseApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Depth")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Depth")
+                        .HasColumnType("REAL");
 
-                    b.Property<decimal>("Height")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Height")
+                        .HasColumnType("REAL");
 
-                    b.Property<decimal>("Weight")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Weight")
+                        .HasColumnType("REAL");
 
-                    b.Property<decimal>("Width")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Width")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
