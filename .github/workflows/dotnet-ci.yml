@@ -35,5 +35,4 @@ jobs:
           dotnet ef migrations script --idempotent
 
       - name: Run unit tests
-        working-directory: WarehouseApp.Tests
-        run: dotnet vstest "./bin/Debug/net9.0/WarehouseApp.Tests.dll"
+        run: dotnet test "WarehouseApp.Tests/WarehouseApp.Tests.csproj" --configuration Release --no-build --verbosity normal
