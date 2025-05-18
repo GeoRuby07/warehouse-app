@@ -1,7 +1,9 @@
 using System;
 
-namespace WarehouseApp.Domain {
-    public class Box : StorageItem {
+namespace WarehouseApp.Domain
+{
+    public class Box : StorageItem
+    {
         /// <summary>
         /// Дата изготовления (nullable).
         /// </summary>

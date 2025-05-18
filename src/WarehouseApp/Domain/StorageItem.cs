@@ -1,7 +1,9 @@
 using System;
 
-namespace WarehouseApp.Domain {
-    public abstract class StorageItem {
+namespace WarehouseApp.Domain
+{
+    public abstract class StorageItem
+    {
         public Guid Id { get; init; }
         public decimal Width { get; init; }
         public decimal Height { get; init; }

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace WarehouseApp.Domain {
-    public class Pallet : StorageItem {
+namespace WarehouseApp.Domain
+{
+    public class Pallet : StorageItem
+    {
         /// <summary>
         /// Список коробок на паллете.
         /// </summary>
