@@ -1,35 +1,34 @@
 using Spectre.Console;
 
-using WarehouseApp.Services;
+using WarehouseApp.UI.Commands;
 
 namespace WarehouseApp.UI
 {
-    public static class ConsoleUI
+    public class ConsoleUI(IEnumerable<IMenuCommand> commands)
     {
-        private static readonly string[] MainOptions = [
-            "1. Показать паллеты по сроку годности",
-            "2. Показать топ-3 паллеты",
-            "3. Добавить данные",
-            "0. Выход"
-        ];
+        private readonly IReadOnlyList<IMenuCommand> _commands = [.. commands];
 
-        public static void Run(IWarehouseService service)
+        public void Run()
         {
             while (true)
             {
+                // Собираем заголовки команд + опцию выхода
+                var titles = new List<string>();
+                for (int i = 0; i < _commands.Count; i++)
+                    titles.Add($"{i + 1}. {_commands[i].Title}");
+                titles.Add("0. Выход");
+
                 var choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("Что вы хотите сделать?")
-                        .AddChoices(MainOptions));
+                        .AddChoices(titles));
 
-                if (choice.StartsWith('0')) break;
+                if (choice.StartsWith("0"))
+                    break;
 
-                switch (choice[0])
-                {
-                    case '1': DisplayUI.ShowByExpiration(service); break;
-                    case '2': DisplayUI.ShowTop3(service); break;
-                    case '3': DataEntryUI.DataEntryMenu(service); break;
-                }
+                // Парсим номер команды из "N. Title"
+                var idx = int.Parse(choice.Split('.')[0]) - 1;
+                _commands[idx].Execute();
 
                 AnsiConsole.MarkupLine("\n[grey]Нажмите любую клавишу...[/]");
                 Console.ReadKey(true);
