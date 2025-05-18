@@ -15,6 +15,11 @@ namespace WarehouseApp.Domain
         /// </summary>
         public DateTime? ExpirationDateInput { get; init; }
 
+        /// <summary>
+        /// Внешний ключ на паллету.
+        /// </summary>
+        public Guid? PalletId { get; set; }
+
         public override DateTime ExpirationDate
         {
             get
