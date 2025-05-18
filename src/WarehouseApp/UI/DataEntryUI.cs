@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 using Spectre.Console;
 
 using WarehouseApp.Domain;
@@ -58,28 +60,49 @@ namespace WarehouseApp.UI {
         private static void CreatePallet(WarehouseContext ctx)
         {
             AnsiConsole.MarkupLine("[underline]Создание паллеты[/]");
+
             var w = PromptDecimal("Ширина паллеты (см):");
             var h = PromptDecimal("Высота паллеты (см):");
             var d = PromptDecimal("Глубина паллеты (см):");
 
-            var boxes = ctx.Boxes.ToList();
-            if (boxes.Count == 0)
+            var boxSummaries = ctx.Boxes
+                .AsNoTracking()
+                .Where(b => b.PalletId == null)
+                .Select(b => new
+                {
+                    b.Id,
+                    Text = $"{b.Id} ({b.Width}cm x {b.Height}cm x {b.Depth}cm, exp:{b.ExpirationDate:yyyy-MM-dd})"
+                })
+                .ToList();
+
+            if (boxSummaries.Count == 0)
             {
-                AnsiConsole.MarkupLine("[red]Нет коробок! Сначала создайте коробку[/]");
+                AnsiConsole.MarkupLine("[red]Нет свободных коробок для паллеты![/]");
                 return;
             }
 
-            var select = AnsiConsole.Prompt(
-                new MultiSelectionPrompt<Box>()
-                    .Title("Выберите коробки:")
+            var selectedIds = AnsiConsole.Prompt(
+                new MultiSelectionPrompt<Guid>()
+                    .Title("Выберите коробки для паллеты:")
                     .PageSize(10)
-                    .AddChoices(boxes)
-                    .UseConverter(b => $"{b.Id} ({b.Width}см x {b.Height}см x {b.Depth}см, срок:{b.ExpirationDate:yyyy-MM-dd})")
+                    .AddChoices(boxSummaries.Select(x => x.Id))
+                    .UseConverter(id => boxSummaries.First(x => x.Id == id).Text)
             );
+
+            if (selectedIds.Count == 0)
+            {
+                AnsiConsole.MarkupLine("[yellow]Ни одна коробка не выбрана — отмена.[/]");
+                return;
+            }
+
+            // 3) Фактически загружаем только выбранные коробки
+            var boxes = ctx.Boxes
+                .Where(b => selectedIds.Contains(b.Id))
+                .ToList();
 
             try
             {
-                var pallet = new Pallet(w, h, d, select);
+                var pallet = new Pallet(w, h, d, boxes);
                 ctx.Pallets.Add(pallet);
                 ctx.SaveChanges();
                 AnsiConsole.MarkupLine($"[green]Паллета создана, Id: {pallet.Id}[/]");

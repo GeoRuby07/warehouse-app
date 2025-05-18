@@ -31,17 +31,24 @@ namespace WarehouseApp.Infrastructure {
         {
             // Даты храним как DATE
             model.Entity<Box>()
-                 .Property(b => b.ManufactureDate)
-                 .HasColumnType("DATE");
+                .Property(b => b.ManufactureDate)
+                .HasColumnType("DATE");
 
             model.Entity<Box>()
-                 .Property(b => b.ExpirationDateInput)
-                 .HasColumnType("DATE");
+                .Property(b => b.ExpirationDateInput)
+                .HasColumnType("DATE");
 
             // ExpirationDate/Volume вычисляемые
             model.Entity<Pallet>()
-                 .Ignore(p => p.ExpirationDate)
-                 .Ignore(p => p.Volume);
+                .Ignore(p => p.ExpirationDate)
+                .Ignore(p => p.Volume);
+
+            // Pallet -> Boxes по ключу PalletId
+            model.Entity<Pallet>()
+                .HasMany(p => p.Boxes)
+                .WithOne()
+                .HasForeignKey("PalletId")
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Конвертер decimal <-> double
             var decimalConverter = new ValueConverter<decimal, double>(
