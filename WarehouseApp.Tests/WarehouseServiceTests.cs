@@ -6,8 +6,10 @@ using WarehouseApp.Domain;
 using WarehouseApp.Infrastructure;
 using WarehouseApp.Services;
 
-namespace WarehouseApp.Tests {
-    public class WarehouseServiceTests {
+namespace WarehouseApp.Tests
+{
+    public class WarehouseServiceTests
+    {
         private static WarehouseContext CreateContext()
         {
             var opts = new DbContextOptionsBuilder<WarehouseContext>()

@@ -6,8 +6,10 @@ using WarehouseApp.Domain;
 
 using Xunit;
 
-namespace WarehouseApp.Tests {
-    public class PalletTests {
+namespace WarehouseApp.Tests
+{
+    public class PalletTests
+    {
         private static Box MakeBox(decimal w, decimal d, DateTime exp, decimal wt = 1)
             => new()
             {

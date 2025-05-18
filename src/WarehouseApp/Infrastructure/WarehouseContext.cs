@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 using WarehouseApp.Domain;
 
-namespace WarehouseApp.Infrastructure {
-    public class WarehouseContext : DbContext {
+namespace WarehouseApp.Infrastructure
+{
+    public class WarehouseContext : DbContext
+    {
         private const string DbFileName = "warehouse.db";
 
         public DbSet<Box> Boxes { get; set; }

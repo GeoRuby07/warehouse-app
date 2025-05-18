@@ -6,8 +6,10 @@ using WarehouseApp.Domain;
 using WarehouseApp.Infrastructure;
 using WarehouseApp.Services;
 
-namespace WarehouseApp.UI {
-    public static class DataEntryUI {
+namespace WarehouseApp.UI
+{
+    public static class DataEntryUI
+    {
         public static void DataEntryMenu(WarehouseService service)
         {
             var ctx = service.GetDbContext();

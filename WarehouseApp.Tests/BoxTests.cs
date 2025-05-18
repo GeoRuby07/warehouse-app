@@ -6,8 +6,10 @@ using WarehouseApp.Domain;
 
 using Xunit;
 
-namespace WarehouseApp.Tests {
-    public class BoxTests {
+namespace WarehouseApp.Tests
+{
+    public class BoxTests
+    {
         [Fact]
         public void ExpirationDate_ShouldUseInput_WhenProvided()
         {

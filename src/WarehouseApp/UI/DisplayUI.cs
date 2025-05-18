@@ -2,8 +2,10 @@ using Spectre.Console;
 
 using WarehouseApp.Services;
 
-namespace WarehouseApp.UI {
-    public static class DisplayUI {
+namespace WarehouseApp.UI
+{
+    public static class DisplayUI
+    {
         public static void ShowByExpiration(WarehouseService svc)
         {
             AnsiConsole.MarkupLine("[underline]Паллеты по сроку годности[/]\n");

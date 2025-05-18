@@ -2,8 +2,10 @@ using Spectre.Console;
 
 using WarehouseApp.Services;
 
-namespace WarehouseApp.UI {
-    public static class ConsoleUI {
+namespace WarehouseApp.UI
+{
+    public static class ConsoleUI
+    {
         private static readonly string[] MainOptions = [
             "1. Показать паллеты по сроку годности",
             "2. Показать топ-3 паллеты",
