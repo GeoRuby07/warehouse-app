@@ -33,8 +33,8 @@ jobs:
           dotnet tool install --global dotnet-ef
           export PATH="$HOME/.dotnet/tools:$PATH"
           dotnet ef migrations script \
-            --project src/WarehouseApp \
-            --startup-project src/WarehouseApp \
+            --project "src/WarehouseApp/WarehouseApp.csproj" \
+            --startup-project "src/WarehouseApp/WarehouseApp.csproj" \
             --idempotent
 
       - name: Run unit tests
