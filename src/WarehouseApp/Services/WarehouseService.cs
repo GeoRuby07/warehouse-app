@@ -18,22 +18,16 @@ namespace WarehouseApp.Services {
 
         public IEnumerable<IGrouping<DateTime, Pallet>> GroupByExpiration()
         {
-            var stats = _db.Pallets
-                .Where(p => p.Boxes.Any())
-                .Select(p => new
-                {
-                    Pallet = p,
-                    ExpirationMin = p.Boxes
-                        .Select(b => b.ExpirationDateInput ?? b.ManufactureDate!.Value.AddDays(100))
-                        .Min(),
-                    WeightCalc = p.Boxes.Sum(b => b.Weight) + 30m
-                })
-                .OrderBy(x => x.ExpirationMin)
-                .ThenBy(x => x.WeightCalc)
-                .AsEnumerable();
+            // Подгружаем навигацию Boxes, даём EF около SQL для Include,
+            // затем группируем и сортируем в памяти
+            var pallets = _db.Pallets
+                             .Include(p => p.Boxes)
+                             .AsNoTracking()
+                             .ToList(); // materialize once
 
-            return stats
-                .GroupBy(x => x.ExpirationMin, x => x.Pallet);
+            return pallets
+                .GroupBy(p => p.ExpirationDate)
+                .OrderBy(g => g.Key);
         }
 
         /// <summary>
@@ -63,7 +57,7 @@ namespace WarehouseApp.Services {
                 .Where(p => topIds.Contains(p.Id))
                 .Include(p => p.Boxes)
                 .AsNoTracking()
-                .ToList();   
+                .ToList();
 
             return pallets
                 .OrderBy(p =>
