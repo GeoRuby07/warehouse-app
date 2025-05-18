@@ -19,25 +19,20 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore dependencies
-        working-directory: src/WarehouseApp
-        run: dotnet restore
+      - name: Restore all projects
+        run: dotnet restore "warehouse-app.sln"
 
       - name: Build solution
-        working-directory: .
-        run: dotnet build warehouse-app.sln --no-restore --configuration Release
+        run: dotnet build "warehouse-app.sln" --no-restore --configuration Release
 
       - name: Run code analysis
-        working-directory: src/WarehouseApp
-        run: dotnet build --no-restore --configuration Release /p:EnableNETAnalyzers=true
+        run: dotnet build "src/WarehouseApp/WarehouseApp.csproj" --no-restore --configuration Release /p:EnableNETAnalyzers=true
 
-      - name: Run EF migrations script (dry-run)
-        working-directory: src/WarehouseApp
+      - name: Generate EF Core migrations script (dry-run)
         run: |
           dotnet tool install --global dotnet-ef
           export PATH="$HOME/.dotnet/tools:$PATH"
-          dotnet ef migrations script --idempotent
+          dotnet ef migrations script --project "src/WarehouseApp" --idempotent
 
       - name: Run unit tests
-        working-directory: WarehouseApp.Tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test "WarehouseApp.Tests/WarehouseApp.Tests.csproj" --no-build --verbosity normal
