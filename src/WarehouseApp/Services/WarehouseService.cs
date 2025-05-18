@@ -50,8 +50,9 @@ namespace WarehouseApp.Services {
                     MaxExpiry = p.Boxes
                         .Select(b => b.ExpirationDateInput ?? b.ManufactureDate!.Value.AddDays(100))
                         .Max(),
-                    VolumeCalc = p.Boxes.Sum(b => b.Width * b.Height * b.Depth)
-                                 + (p.Width * p.Height * p.Depth)
+                    VolumeCalc = Convert.ToDouble(
+                        p.Boxes.Sum(b => b.Width * b.Height * b.Depth)
+                      + (p.Width * p.Height * p.Depth))
                 })
                 .OrderByDescending(x => x.MaxExpiry)
                 .ThenBy(x => x.VolumeCalc)
@@ -63,12 +64,13 @@ namespace WarehouseApp.Services {
                 .Where(p => topIds.Contains(p.Id))
                 .Include(p => p.Boxes)
                 .AsNoTracking()
-                .ToList();   
+                .ToList();
 
             return pallets
-                .OrderBy(p =>
-                    p.Boxes.Sum(b => b.Width * b.Height * b.Depth)
-                  + (p.Width * p.Height * p.Depth));
+                .OrderByDescending(p => p.Boxes
+                    .Select(b => b.ExpirationDateInput ?? b.ManufactureDate!.Value.AddDays(100))
+                    .Max())
+                .ThenBy(p => p.Volume);
         }
     }
 }
