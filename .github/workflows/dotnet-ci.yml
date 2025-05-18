@@ -36,4 +36,4 @@ jobs:
 
       - name: Run unit tests
         working-directory: WarehouseApp.Tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet vstest "./bin/Debug/net9.0/WarehouseApp.Tests.dll"
