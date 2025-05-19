@@ -5,7 +5,8 @@ namespace WarehouseApp.Application.Services
     /// <summary>
     /// Бизнес-операции над складом
     /// </summary>
-    public interface IWarehouseService {
+    public interface IWarehouseService
+    {
         Task<IReadOnlyList<IGrouping<DateTime, Pallet>>> GroupByExpirationAsync();
         Task<IReadOnlyList<Pallet>> GetTop3ByMaxBoxExpirationAsync();
         Task<IEnumerable<Box>> GetAvailableBoxesAsync();

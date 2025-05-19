@@ -36,10 +36,10 @@ namespace WarehouseApp.Tests
                 [
                     new Box
                     {
-                        Width               = 1,
-                        Height              = 1,
-                        Depth               = 1,
-                        Weight              = 1,
+                        Width = 1,
+                        Height = 1,
+                        Depth = 1,
+                        Weight = 1,
                         ExpirationDateInput = d2
                     }
                 ]);
@@ -47,10 +47,10 @@ namespace WarehouseApp.Tests
                 [
                     new Box
                     {
-                        Width               = 1,
-                        Height              = 1,
-                        Depth               = 1,
-                        Weight              = 1,
+                        Width = 1,
+                        Height = 1,
+                        Depth = 1,
+                        Weight = 1,
                         ExpirationDateInput = d1
                     }
                 ]);
@@ -80,10 +80,10 @@ namespace WarehouseApp.Tests
                     [
                         new Box
                         {
-                            Width               = 1,
-                            Height              = 1,
-                            Depth               = 1,
-                            Weight              = 1,
+                            Width = 1,
+                            Height = 1,
+                            Depth = 1,
+                            Weight = 1,
                             ExpirationDateInput = new DateTime(2025, 1, i)
                         }
                     ]))

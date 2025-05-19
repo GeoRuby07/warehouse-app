@@ -6,7 +6,7 @@ namespace WarehouseApp.UI
 {
     public class ConsoleUI(IEnumerable<IMenuCommand> commands)
     {
-        private readonly IReadOnlyList<IMenuCommand> _commands = [.. commands];
+        private readonly IReadOnlyList<IMenuCommand> _commands = [..commands];
 
         public async Task RunAsync()
         {

@@ -8,8 +8,10 @@ using Serilog.Events;
 using WarehouseApp.Infrastructure;
 using WarehouseApp.UI;
 
-namespace WarehouseApp {
-    public static class Program {
+namespace WarehouseApp
+{
+    public static class Program
+    {
         public static async Task Main()
         {
             Log.Logger = new LoggerConfiguration()

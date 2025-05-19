@@ -5,14 +5,15 @@ using WarehouseApp.Domain;
 
 namespace WarehouseApp.Infrastructure
 {
-    public class WarehouseContext : DbContext, IWarehouseContext {
+    public class WarehouseContext : DbContext, IWarehouseContext
+    {
         private const string DbFileName = "warehouse.db";
 
         public DbSet<Box> Boxes { get; set; }
         public DbSet<Pallet> Pallets { get; set; }
 
         public WarehouseContext(DbContextOptions<WarehouseContext> options)
-    : base(options)
+        : base(options)
         {
         }
 
