@@ -1,6 +1,6 @@
 using WarehouseApp.Domain;
 
-namespace WarehouseApp.Services
+namespace WarehouseApp.Application.Services
 {
     /// <summary>
     /// Бизнес-операции над складом

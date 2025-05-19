@@ -1,6 +1,6 @@
 using Spectre.Console;
 
-using WarehouseApp.Services;
+using WarehouseApp.Application.Services;
 
 namespace WarehouseApp.UI
 {

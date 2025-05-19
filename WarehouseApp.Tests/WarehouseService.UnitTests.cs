@@ -3,8 +3,8 @@ using FluentAssertions;
 using Moq;
 
 using WarehouseApp.Application.Repositories;
+using WarehouseApp.Application.Services;
 using WarehouseApp.Domain;
-using WarehouseApp.Services;
 
 namespace WarehouseApp.Tests
 {

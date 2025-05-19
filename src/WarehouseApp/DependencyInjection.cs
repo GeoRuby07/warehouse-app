@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using WarehouseApp.Application.Repositories;
+using WarehouseApp.Application.Services;
 using WarehouseApp.Infrastructure;
 using WarehouseApp.Infrastructure.Repositories;
-using WarehouseApp.Services;
 using WarehouseApp.UI;
 using WarehouseApp.UI.Commands;
 

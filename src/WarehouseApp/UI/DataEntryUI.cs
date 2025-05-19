@@ -1,7 +1,7 @@
 using Spectre.Console;
 
+using WarehouseApp.Application.Services;
 using WarehouseApp.Domain;
-using WarehouseApp.Services;
 
 namespace WarehouseApp.UI
 {

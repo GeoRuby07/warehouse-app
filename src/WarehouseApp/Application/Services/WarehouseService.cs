@@ -2,7 +2,7 @@ using WarehouseApp.Application.Repositories;
 using WarehouseApp.Domain;
 using WarehouseApp.Infrastructure;
 
-namespace WarehouseApp.Services
+namespace WarehouseApp.Application.Services
 {
     public class WarehouseService(
         IBoxRepository boxRepository,

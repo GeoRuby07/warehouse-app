@@ -1,4 +1,4 @@
-using WarehouseApp.Services;
+using WarehouseApp.Application.Services;
 
 namespace WarehouseApp.UI.Commands
 {

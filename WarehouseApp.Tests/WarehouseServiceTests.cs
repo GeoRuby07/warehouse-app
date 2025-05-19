@@ -2,10 +2,10 @@ using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
 
+using WarehouseApp.Application.Services;
 using WarehouseApp.Domain;
 using WarehouseApp.Infrastructure;
 using WarehouseApp.Infrastructure.Repositories;
-using WarehouseApp.Services;
 
 namespace WarehouseApp.Tests
 {
