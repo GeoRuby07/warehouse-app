@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using WarehouseApp.Application.Repositories;
 using WarehouseApp.Infrastructure;
+using WarehouseApp.Infrastructure.Repositories;
 using WarehouseApp.Services;
 using WarehouseApp.UI;
 using WarehouseApp.UI.Commands;
@@ -22,6 +24,10 @@ namespace WarehouseApp
 
             // Регистрируем сервис приложения
             services.AddScoped<IWarehouseService, WarehouseService>();
+
+            //Регистрация репозиториев
+            services.AddScoped<IBoxRepository, BoxRepository>();
+            services.AddScoped<IPalletRepository, PalletRepository>();
 
             // Регистрируем UI
             services.AddScoped<IMenuCommand, ShowByExpirationCommand>();
