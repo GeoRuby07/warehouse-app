@@ -8,6 +8,6 @@ namespace WarehouseApp.UI.Commands
 
         private readonly IWarehouseService _service = service;
 
-        public void Execute() => DataEntryUI.DataEntryMenu(_service);
+        public async Task ExecuteAsync() => await DataEntryUI.DataEntryMenu(_service);
     }
 }

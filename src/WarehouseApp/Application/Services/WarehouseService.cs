@@ -14,54 +14,42 @@ namespace WarehouseApp.Application.Services
         /// <summary>
         /// Группирует паллеты по сроку годности, сортирует группы и паллеты внутри по весу.
         /// </summary>
-        public IEnumerable<IGrouping<DateTime, Pallet>> GroupByExpiration() =>
-            _palletRepo
-                .ListGroupedByExpirationAsync()
-                .GetAwaiter()
-                .GetResult();
+        public Task<IReadOnlyList<IGrouping<DateTime, Pallet>>> GroupByExpirationAsync() =>
+            _palletRepo.ListGroupedByExpirationAsync();
 
         /// <summary>
         /// Берёт 3 паллеты с наибольшим сроком годности (макс из коробок) и сортирует по возрастанию объёма.
         /// </summary>
-        public IEnumerable<Pallet> GetTop3ByMaxBoxExpiration() =>
-            _palletRepo
-                .GetTop3ByMaxBoxExpirationAsync()
-                .GetAwaiter()
-                .GetResult();
+        public Task<IReadOnlyList<Pallet>> GetTop3ByMaxBoxExpirationAsync() =>
+            _palletRepo.GetTop3ByMaxBoxExpirationAsync();
 
-        public IEnumerable<Box> GetAvailableBoxes() =>
-            _boxRepo
-                .ListAsync()
-                .GetAwaiter()
-                .GetResult()
-                .Where(b => b.PalletId == null);
 
-        public Box CreateBox(Box box)
+
+        public async Task<IEnumerable<Box>> GetAvailableBoxesAsync()
         {
-            _boxRepo
-                .AddAsync(box)
-                .GetAwaiter()
-                .GetResult();
-
-            return box;
+            var all = await _boxRepo.ListAsync();
+            return all.Where(b => b.PalletId == null);
         }
 
-        public Pallet CreatePallet(decimal width, decimal height, decimal depth, IEnumerable<Guid> boxIds)
+        public Task<Box> CreateBoxAsync(Box box)
         {
-            var boxes = _boxRepo
-                .ListAsync()
-                .GetAwaiter()
-                .GetResult()
+            // сохранение происходит внутри репозитория
+            return _boxRepo.AddAsync(box)
+                           .ContinueWith(_ => box);
+        }
+
+        public async Task<Pallet> CreatePalletAsync(
+            decimal width,
+            decimal height,
+            decimal depth,
+            IEnumerable<Guid> boxIds)
+        {
+            var boxes = (await _boxRepo.ListAsync())
                 .Where(b => boxIds.Contains(b.Id))
                 .ToList();
 
             var pallet = new Pallet(width, height, depth, boxes);
-
-            _palletRepo
-                .AddAsync(pallet)
-                .GetAwaiter()
-                .GetResult();
-
+            await _palletRepo.AddAsync(pallet);
             return pallet;
         }
     }

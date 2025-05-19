@@ -8,6 +8,6 @@ namespace WarehouseApp.UI.Commands
 
         private readonly IWarehouseService _service = service;
 
-        public void Execute() => DisplayUI.ShowByExpiration(_service);
+        public async Task ExecuteAsync() => await DisplayUI.ShowByExpirationAsync(_service);
     }
 }

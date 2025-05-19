@@ -23,7 +23,7 @@ namespace WarehouseApp.Tests
         }
 
         [Fact]
-        public void GroupByExpiration_ShouldDelegateToRepository()
+        public async Task GroupByExpiration_ShouldDelegateToRepositoryAsync()
         {
             // arrange
             var d1 = new DateTime(2025, 1, 1);
@@ -36,7 +36,7 @@ namespace WarehouseApp.Tests
                 .ReturnsAsync(expected);
 
             // act
-            var actual = _svc.GroupByExpiration().ToList();
+            var actual = (await _svc.GroupByExpirationAsync()).ToList();
 
             // assert
             actual.Should().Equal(expected);
@@ -44,7 +44,7 @@ namespace WarehouseApp.Tests
         }
 
         [Fact]
-        public void GetTop3ByMaxBoxExpiration_ShouldDelegateToRepository()
+        public async Task GetTop3ByMaxBoxExpiration_ShouldDelegateToRepositoryAsync()
         {
             // arrange
             var fake = new List<Pallet>
@@ -57,7 +57,7 @@ namespace WarehouseApp.Tests
                 .ReturnsAsync(fake);
 
             // act
-            var actual = _svc.GetTop3ByMaxBoxExpiration().ToList();
+            var actual = (await _svc.GetTop3ByMaxBoxExpirationAsync()).ToList();
 
             // assert
             actual.Should().Equal(fake);
@@ -65,7 +65,7 @@ namespace WarehouseApp.Tests
         }
 
         [Fact]
-        public void GetAvailableBoxes_ShouldFilterOutAlreadyAssigned()
+        public async Task GetAvailableBoxes_ShouldFilterOutAlreadyAssignedAsync()
         {
             // arrange
             var b1 = new Box { Id = Guid.NewGuid(), PalletId = null };
@@ -75,7 +75,7 @@ namespace WarehouseApp.Tests
                 .ReturnsAsync([b1, b2]);
 
             // act
-            var actual = _svc.GetAvailableBoxes().ToList();
+            var actual = (await _svc.GetAvailableBoxesAsync()).ToList();
 
             // assert
             actual.Should().ContainSingle().Which.Should().Be(b1);
@@ -83,7 +83,7 @@ namespace WarehouseApp.Tests
         }
 
         [Fact]
-        public void CreateBox_ShouldCallRepositoryAndReturnBox()
+        public async Task CreateBox_ShouldCallRepositoryAndReturnBoxAsync()
         {
             // arrange
             var box = new Box { Id = Guid.NewGuid() };
@@ -93,7 +93,7 @@ namespace WarehouseApp.Tests
                 .Verifiable();
 
             // act
-            var created = _svc.CreateBox(box);
+            var created = await _svc.CreateBoxAsync(box);
 
             // assert
             created.Should().Be(box);
@@ -101,7 +101,7 @@ namespace WarehouseApp.Tests
         }
 
         [Fact]
-        public void CreatePallet_ShouldCallRepositoryWithCorrectBoxes()
+        public async Task CreatePallet_ShouldCallRepositoryWithCorrectBoxesAsync()
         {
             // arrange
             var boxId = Guid.NewGuid();
@@ -115,7 +115,7 @@ namespace WarehouseApp.Tests
                 .Verifiable();
 
             // act
-            var pallet = _svc.CreatePallet(1, 2, 3, [boxId]);
+            var pallet = await _svc.CreatePalletAsync(1, 2, 3, [boxId]);
 
             // assert
             pallet.Boxes.Should().ContainSingle().Which.Should().Be(box);

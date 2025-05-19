@@ -8,7 +8,7 @@ namespace WarehouseApp.UI
     {
         private readonly IReadOnlyList<IMenuCommand> _commands = [.. commands];
 
-        public void Run()
+        public async Task RunAsync()
         {
             while (true)
             {
@@ -28,7 +28,7 @@ namespace WarehouseApp.UI
 
                 // Парсим номер команды из "N. Title"
                 var idx = int.Parse(choice.Split('.')[0]) - 1;
-                _commands[idx].Execute();
+                await _commands[idx].ExecuteAsync();
 
                 AnsiConsole.MarkupLine("\n[grey]Нажмите любую клавишу...[/]");
                 Console.ReadKey(true);

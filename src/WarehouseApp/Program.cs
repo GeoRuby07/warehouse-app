@@ -8,7 +8,7 @@ namespace WarehouseApp
 {
     public static class Program
     {
-        public static void Main()
+        public static async Task Main()
         {
             // Собираем ServiceCollection и регистрируем ВСЁ одной строкой
             var services = new ServiceCollection()
@@ -18,11 +18,11 @@ namespace WarehouseApp
 
             // Применяем миграции
             var db = provider.GetRequiredService<WarehouseContext>();
-            db.Database.Migrate();
+            await db.Database.MigrateAsync();
 
             // Запускаем консольный интерфейс
             var ui = provider.GetRequiredService<ConsoleUI>();
-            ui.Run();
+            await ui.RunAsync();
         }
     }
 }

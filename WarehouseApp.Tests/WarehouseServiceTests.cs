@@ -20,7 +20,7 @@ namespace WarehouseApp.Tests
         }
 
         [Fact]
-        public void GroupByExpiration_ShouldGroupAndSort()
+        public async Task GroupByExpiration_ShouldGroupAndSortAsync()
         {
             using var ctx = CreateContext();
             var boxRepo = new BoxRepository(ctx);
@@ -56,7 +56,7 @@ namespace WarehouseApp.Tests
             ctx.Pallets.AddRange(p1, p2);
             ctx.SaveChanges();
 
-            var groups = svc.GroupByExpiration().ToList();
+            var groups = (await svc.GroupByExpirationAsync()).ToList();
 
             groups.Should().HaveCount(2);
             groups[0].Key.Should().Be(d1);
@@ -65,7 +65,7 @@ namespace WarehouseApp.Tests
         }
 
         [Fact]
-        public void GetTop3ByMaxBoxExpiration_ShouldReturnCorrectOrder()
+        public async Task GetTop3ByMaxBoxExpiration_ShouldReturnCorrectOrderAsync()
         {
             using var ctx = CreateContext();
             var boxRepo = new BoxRepository(ctx);
@@ -89,7 +89,7 @@ namespace WarehouseApp.Tests
             ctx.Pallets.AddRange(pallets);
             ctx.SaveChanges();
 
-            var top3 = svc.GetTop3ByMaxBoxExpiration().ToList();
+            var top3 = (await svc.GetTop3ByMaxBoxExpirationAsync()).ToList();
 
             top3.Should().HaveCount(3);
             top3

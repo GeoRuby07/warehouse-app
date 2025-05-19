@@ -6,11 +6,11 @@ namespace WarehouseApp.UI
 {
     public static class DisplayUI
     {
-        public static void ShowByExpiration(IWarehouseService svc)
+        public static async Task ShowByExpirationAsync(IWarehouseService svc)
         {
             AnsiConsole.MarkupLine("[underline]Паллеты по сроку годности[/]\n");
-
-            foreach (var grp in svc.GroupByExpiration())
+            var grouped = await svc.GroupByExpirationAsync();
+            foreach (var grp in grouped)
             {
                 AnsiConsole.MarkupLine($"[green]Срок: {grp.Key:dd.MM.yyyy}[/]");
 
@@ -33,7 +33,7 @@ namespace WarehouseApp.UI
             }
         }
 
-        public static void ShowTop3(IWarehouseService svc)
+        public static async Task ShowTop3Async(IWarehouseService svc)
         {
             AnsiConsole.MarkupLine("[underline]Топ-3 паллеты[/]\n");
 
@@ -43,7 +43,7 @@ namespace WarehouseApp.UI
                 .AddColumn("Вес (кг)")
                 .AddColumn("Объем (куб.см)");
 
-            foreach (var p in svc.GetTop3ByMaxBoxExpiration())
+            foreach (var p in await svc.GetTop3ByMaxBoxExpirationAsync())
             {
                 var maxBox = p.Boxes.Max(b => b.ExpirationDate);
                 table.AddRow(p.Id.ToString(),

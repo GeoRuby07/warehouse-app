@@ -7,7 +7,7 @@ namespace WarehouseApp.UI
 {
     public static class DataEntryUI
     {
-        public static void DataEntryMenu(IWarehouseService service)
+        public static async Task DataEntryMenu(IWarehouseService service)
         {
             while (true)
             {
@@ -20,13 +20,13 @@ namespace WarehouseApp.UI
                     break;
 
                 if (sub.StartsWith("1"))
-                    CreateBox(service);
+                    await CreateBoxAsync(service);
                 else
-                    CreatePallet(service);
+                    await CreatePalletAsync(service);
             }
         }
 
-        private static void CreateBox(IWarehouseService service)
+        private static async Task CreateBoxAsync(IWarehouseService service)
         {
             AnsiConsole.MarkupLine("[underline]Создание коробки[/]");
             var w = PromptDecimal("Ширина (см):");
@@ -50,11 +50,11 @@ namespace WarehouseApp.UI
                 ManufactureDate = mfg
             };
 
-            box = service.CreateBox(box);
+            box = await service.CreateBoxAsync(box);
             AnsiConsole.MarkupLine($"[green]Коробка создана, Id: {box.Id}[/]");
         }
 
-        private static void CreatePallet(IWarehouseService service)
+        private static async Task CreatePalletAsync(IWarehouseService service)
         {
             AnsiConsole.MarkupLine("[underline]Создание паллеты[/]");
 
@@ -62,7 +62,7 @@ namespace WarehouseApp.UI
             var h = PromptDecimal("Высота паллеты (см):");
             var d = PromptDecimal("Глубина паллеты (см):");
 
-            var available = service.GetAvailableBoxes().ToList();
+            var available = (await service.GetAvailableBoxesAsync()).ToList();
             if (!available.Any())
             {
                 AnsiConsole.MarkupLine("[red]Нет свободных коробок для паллеты![/]");
@@ -88,7 +88,7 @@ namespace WarehouseApp.UI
                 return;
             }
 
-            var pallet = service.CreatePallet(w, h, d, selectedIds);
+            var pallet = service.CreatePalletAsync(w, h, d, selectedIds);
             AnsiConsole.MarkupLine($"[green]Паллета создана, Id: {pallet.Id}[/]");
         }
 
