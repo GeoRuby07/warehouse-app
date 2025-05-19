@@ -1,12 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-using WarehouseApp.Application.Repositories;
 using WarehouseApp.Infrastructure;
-using WarehouseApp.Infrastructure.Repositories;
-using WarehouseApp.Services;
 using WarehouseApp.UI;
-using WarehouseApp.UI.Commands;
 
 namespace WarehouseApp
 {
@@ -14,35 +10,17 @@ namespace WarehouseApp
     {
         public static void Main()
         {
-            // Собираем ServiceCollection
-            var services = new ServiceCollection();
+            // Собираем ServiceCollection и регистрируем ВСЁ одной строкой
+            var services = new ServiceCollection()
+                .AddWarehouseAppServices();
 
-            // Регистрируем DbContext и абстракции
-            services.AddDbContext<WarehouseContext>(options =>
-                options.UseSqlite("Data Source=warehouse.db"));
-            services.AddScoped<IWarehouseContext>(sp => sp.GetRequiredService<WarehouseContext>());
-
-            // Регистрируем сервис приложения
-            services.AddScoped<IWarehouseService, WarehouseService>();
-
-            //Регистрация репозиториев
-            services.AddScoped<IBoxRepository, BoxRepository>();
-            services.AddScoped<IPalletRepository, PalletRepository>();
-
-            // Регистрируем UI
-            services.AddScoped<IMenuCommand, ShowByExpirationCommand>();
-            services.AddScoped<IMenuCommand, ShowTop3Command>();
-            services.AddScoped<IMenuCommand, DataEntryCommand>();
-            services.AddScoped<ConsoleUI>();
-
-            // Строим провайдер
             var provider = services.BuildServiceProvider();
 
             // Применяем миграции
             var db = provider.GetRequiredService<WarehouseContext>();
             db.Database.Migrate();
 
-            // Запускаем UI, резолвим ConsoleUI
+            // Запускаем консольный интерфейс
             var ui = provider.GetRequiredService<ConsoleUI>();
             ui.Run();
         }
