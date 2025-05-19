@@ -5,11 +5,9 @@ using WarehouseApp.Infrastructure;
 namespace WarehouseApp.Services
 {
     public class WarehouseService(
-        IWarehouseContext dbContext,
         IBoxRepository boxRepository,
         IPalletRepository palletRepository) : IWarehouseService
     {
-        private readonly IWarehouseContext _db = dbContext;
         private readonly IBoxRepository _boxRepo = boxRepository;
         private readonly IPalletRepository _palletRepo = palletRepository;
 
@@ -45,7 +43,6 @@ namespace WarehouseApp.Services
                 .GetAwaiter()
                 .GetResult();
 
-            _db.SaveChanges();
             return box;
         }
 
@@ -65,7 +62,6 @@ namespace WarehouseApp.Services
                 .GetAwaiter()
                 .GetResult();
 
-            _db.SaveChanges();
             return pallet;
         }
     }

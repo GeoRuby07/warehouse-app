@@ -1,20 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentAssertions;
+
 using Moq;
+
+using WarehouseApp.Application.Repositories;
 using WarehouseApp.Domain;
-using WarehouseApp.Infrastructure;
 using WarehouseApp.Services;
-using WarehouseApp.Application.Repositories; // IPalletRepository, IBoxRepository
-using Xunit;
 
 namespace WarehouseApp.Tests
 {
     public class WarehouseServiceUnitTests
     {
-        private readonly Mock<IWarehouseContext> _dbMock = new();
         private readonly Mock<IBoxRepository> _boxRepo = new();
         private readonly Mock<IPalletRepository> _palletRepo = new();
         private readonly WarehouseService _svc;
@@ -22,7 +17,6 @@ namespace WarehouseApp.Tests
         public WarehouseServiceUnitTests()
         {
             _svc = new WarehouseService(
-                _dbMock.Object,
                 _boxRepo.Object,
                 _palletRepo.Object
             );
@@ -33,20 +27,19 @@ namespace WarehouseApp.Tests
         {
             // arrange
             var d1 = new DateTime(2025, 1, 1);
-            var grouping = new[] { new Pallet(1, 1, 1, []) }
+            var dummyGroup = new[] { new Pallet(1, 1, 1, []) }
                 .GroupBy(p => d1)
                 .First();
-            var dummy = new List<IGrouping<DateTime, Pallet>> { grouping };
-
+            var expected = new List<IGrouping<DateTime, Pallet>> { dummyGroup };
             _palletRepo
                 .Setup(r => r.ListGroupedByExpirationAsync())
-                .ReturnsAsync(dummy);
+                .ReturnsAsync(expected);
 
             // act
-            var result = _svc.GroupByExpiration().ToList();
+            var actual = _svc.GroupByExpiration().ToList();
 
             // assert
-            result.Should().Equal(dummy);
+            actual.Should().Equal(expected);
             _palletRepo.Verify(r => r.ListGroupedByExpirationAsync(), Times.Once);
         }
 
@@ -64,10 +57,10 @@ namespace WarehouseApp.Tests
                 .ReturnsAsync(fake);
 
             // act
-            var result = _svc.GetTop3ByMaxBoxExpiration().ToList();
+            var actual = _svc.GetTop3ByMaxBoxExpiration().ToList();
 
             // assert
-            result.Should().Equal(fake);
+            actual.Should().Equal(fake);
             _palletRepo.Verify(r => r.GetTop3ByMaxBoxExpirationAsync(), Times.Once);
         }
 
@@ -82,15 +75,15 @@ namespace WarehouseApp.Tests
                 .ReturnsAsync([b1, b2]);
 
             // act
-            var result = _svc.GetAvailableBoxes().ToList();
+            var actual = _svc.GetAvailableBoxes().ToList();
 
             // assert
-            result.Should().ContainSingle().Which.Should().Be(b1);
+            actual.Should().ContainSingle().Which.Should().Be(b1);
             _boxRepo.Verify(r => r.ListAsync(), Times.Once);
         }
 
         [Fact]
-        public void CreateBox_ShouldAddAndSave()
+        public void CreateBox_ShouldCallRepositoryAndReturnBox()
         {
             // arrange
             var box = new Box { Id = Guid.NewGuid() };
@@ -104,12 +97,11 @@ namespace WarehouseApp.Tests
 
             // assert
             created.Should().Be(box);
-            _boxRepo.Verify();
-            _dbMock.Verify(db => db.SaveChanges(), Times.Once);
+            _boxRepo.Verify(r => r.AddAsync(box), Times.Once);
         }
 
         [Fact]
-        public void CreatePallet_ShouldAddAndSave()
+        public void CreatePallet_ShouldCallRepositoryWithCorrectBoxes()
         {
             // arrange
             var boxId = Guid.NewGuid();
@@ -127,8 +119,8 @@ namespace WarehouseApp.Tests
 
             // assert
             pallet.Boxes.Should().ContainSingle().Which.Should().Be(box);
-            _palletRepo.Verify();
-            _dbMock.Verify(db => db.SaveChanges(), Times.Once);
+            _boxRepo.Verify(r => r.ListAsync(), Times.Once);
+            _palletRepo.Verify(r => r.AddAsync(It.Is<Pallet>(p => p.Boxes.Single() == box)), Times.Once);
         }
     }
 }

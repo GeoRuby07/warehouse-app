@@ -18,6 +18,7 @@ namespace WarehouseApp.Infrastructure.Repositories
         public async Task AddAsync(Box box)
         {
             await _ctx.Boxes.AddAsync(box);
+            await _ctx.SaveChangesAsync();
         }
     }
 }

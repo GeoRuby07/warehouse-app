@@ -21,7 +21,7 @@ namespace WarehouseApp.Infrastructure.Repositories
         public async Task AddAsync(Pallet pallet)
         {
             await _ctx.Pallets.AddAsync(pallet);
-            // SaveChanges в сервисе
+            await _ctx.SaveChangesAsync();
         }
 
         public async Task<IReadOnlyList<IGrouping<DateTime, Pallet>>> ListGroupedByExpirationAsync()
