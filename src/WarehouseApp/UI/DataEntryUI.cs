@@ -95,7 +95,7 @@ namespace WarehouseApp.UI
         private static decimal PromptDecimal(string prompt) =>
             AnsiConsole.Prompt(
                 new TextPrompt<decimal>(prompt)
-                    .ValidationErrorMessage("<red>Введите число > 0</>")
+                    .ValidationErrorMessage("[red]Введите число[/]")
                     .Validate(n => n > 0)
             );
     }
