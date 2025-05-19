@@ -1,6 +1,7 @@
 using FluentAssertions;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 using WarehouseApp.Application.Services;
 using WarehouseApp.Domain;
@@ -25,7 +26,8 @@ namespace WarehouseApp.Tests
             using var ctx = CreateContext();
             var boxRepo = new BoxRepository(ctx);
             var palletRepo = new PalletRepository(ctx);
-            var svc = new WarehouseService(boxRepo, palletRepo);
+            var logger = NullLogger<WarehouseService>.Instance;
+            var svc = new WarehouseService(boxRepo, palletRepo, logger);
 
             var d1 = new DateTime(2025, 1, 1);
             var d2 = new DateTime(2025, 1, 2);
@@ -70,7 +72,8 @@ namespace WarehouseApp.Tests
             using var ctx = CreateContext();
             var boxRepo = new BoxRepository(ctx);
             var palletRepo = new PalletRepository(ctx);
-            var svc = new WarehouseService(boxRepo, palletRepo);
+            var logger = NullLogger<WarehouseService>.Instance;
+            var svc = new WarehouseService(boxRepo, palletRepo, logger);
 
             var pallets = Enumerable.Range(1, 4)
                 .Select(i => new Pallet(1, 1, 1,

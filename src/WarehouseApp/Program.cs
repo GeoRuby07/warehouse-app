@@ -1,28 +1,53 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+using Serilog;
+using Serilog.Events;
 
 using WarehouseApp.Infrastructure;
 using WarehouseApp.UI;
 
-namespace WarehouseApp
-{
-    public static class Program
-    {
+namespace WarehouseApp {
+    public static class Program {
         public static async Task Main()
         {
-            // Собираем ServiceCollection и регистрируем ВСЁ одной строкой
-            var services = new ServiceCollection()
-                .AddWarehouseAppServices();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.File(
+                    path: "logs/warehouse-.log",
+                    rollingInterval: RollingInterval.Day,
+                    restrictedToMinimumLevel: LogEventLevel.Information)
+                .CreateLogger();
 
-            var provider = services.BuildServiceProvider();
+            try
+            {
+                Log.Information("Starting up");
 
-            // Применяем миграции
-            var db = provider.GetRequiredService<WarehouseContext>();
-            await db.Database.MigrateAsync();
+                var host = Host.CreateDefaultBuilder()
+                    .UseSerilog()   // подключаем Serilog
+                    .ConfigureServices((_, services) =>
+                        services.AddWarehouseAppServices())
+                    .Build();
 
-            // Запускаем консольный интерфейс
-            var ui = provider.GetRequiredService<ConsoleUI>();
-            await ui.RunAsync();
+                // Миграции
+                var db = host.Services.GetRequiredService<WarehouseContext>();
+                await db.Database.MigrateAsync();
+
+                // Запуск UI
+                var ui = host.Services.GetRequiredService<ConsoleUI>();
+                await ui.RunAsync();
+
+                Log.Information("Shutting down");
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application terminated unexpectedly");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
     }
 }

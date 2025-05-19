@@ -1,5 +1,7 @@
 using FluentAssertions;
 
+using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using WarehouseApp.Application.Repositories;
@@ -12,13 +14,15 @@ namespace WarehouseApp.Tests
     {
         private readonly Mock<IBoxRepository> _boxRepo = new();
         private readonly Mock<IPalletRepository> _palletRepo = new();
+        private readonly Mock<ILogger<WarehouseService>> _logger = new();
         private readonly WarehouseService _svc;
 
         public WarehouseServiceUnitTests()
         {
             _svc = new WarehouseService(
                 _boxRepo.Object,
-                _palletRepo.Object
+                _palletRepo.Object,
+                _logger.Object
             );
         }
 
