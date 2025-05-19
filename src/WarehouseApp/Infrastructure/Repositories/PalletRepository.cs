@@ -15,7 +15,6 @@ namespace WarehouseApp.Infrastructure.Repositories
         public async Task<IReadOnlyList<Pallet>> ListAsync() =>
             await _ctx.Pallets
                       .Include(p => p.Boxes)
-                      .AsNoTracking()
                       .ToListAsync();
 
         public async Task AddAsync(Pallet pallet)

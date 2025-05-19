@@ -13,7 +13,7 @@ namespace WarehouseApp.Infrastructure.Repositories
             await _ctx.Boxes.FindAsync(id);
 
         public async Task<IReadOnlyList<Box>> ListAsync() =>
-            await _ctx.Boxes.AsNoTracking().ToListAsync();
+            await _ctx.Boxes.ToListAsync();
 
         public async Task AddAsync(Box box)
         {
