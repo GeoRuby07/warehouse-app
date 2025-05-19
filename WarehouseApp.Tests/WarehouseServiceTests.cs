@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 using WarehouseApp.Domain;
 using WarehouseApp.Infrastructure;
+using WarehouseApp.Infrastructure.Repositories;
 using WarehouseApp.Services;
 
 namespace WarehouseApp.Tests
@@ -22,17 +23,41 @@ namespace WarehouseApp.Tests
         public void GroupByExpiration_ShouldGroupAndSort()
         {
             using var ctx = CreateContext();
-            var svc = new WarehouseService(ctx);
+            var boxRepo = new BoxRepository(ctx);
+            var palletRepo = new PalletRepository(ctx);
+            var svc = new WarehouseService(ctx, boxRepo, palletRepo);
+
             var d1 = new DateTime(2025, 1, 1);
             var d2 = new DateTime(2025, 1, 2);
 
-            var p1 = new Pallet(1, 1, 1, [new Box { Width = 1, Height = 1, Depth = 1, Weight = 1, ExpirationDateInput = d2 }]);
-            var p2 = new Pallet(1, 1, 1, [new Box { Width = 1, Height = 1, Depth = 1, Weight = 1, ExpirationDateInput = d1 }]);
+            var p1 = new Pallet(1, 1, 1,
+                [
+                    new Box
+                    {
+                        Width               = 1,
+                        Height              = 1,
+                        Depth               = 1,
+                        Weight              = 1,
+                        ExpirationDateInput = d2
+                    }
+                ]);
+            var p2 = new Pallet(1, 1, 1,
+                [
+                    new Box
+                    {
+                        Width               = 1,
+                        Height              = 1,
+                        Depth               = 1,
+                        Weight              = 1,
+                        ExpirationDateInput = d1
+                    }
+                ]);
 
             ctx.Pallets.AddRange(p1, p2);
             ctx.SaveChanges();
 
             var groups = svc.GroupByExpiration().ToList();
+
             groups.Should().HaveCount(2);
             groups[0].Key.Should().Be(d1);
             groups[1].Key.Should().Be(d2);
@@ -43,21 +68,38 @@ namespace WarehouseApp.Tests
         public void GetTop3ByMaxBoxExpiration_ShouldReturnCorrectOrder()
         {
             using var ctx = CreateContext();
-            var svc = new WarehouseService(ctx);
+            var boxRepo = new BoxRepository(ctx);
+            var palletRepo = new PalletRepository(ctx);
+            var svc = new WarehouseService(ctx, boxRepo, palletRepo);
 
-            // Exp: 1,2,3,4
             var pallets = Enumerable.Range(1, 4)
                 .Select(i => new Pallet(1, 1, 1,
-                    [new Box { Width = 1, Height = 1, Depth = 1, Weight = 1, ExpirationDateInput = new DateTime(2025, 1, i) }]))
+                    [
+                        new Box
+                        {
+                            Width               = 1,
+                            Height              = 1,
+                            Depth               = 1,
+                            Weight              = 1,
+                            ExpirationDateInput = new DateTime(2025, 1, i)
+                        }
+                    ]))
                 .ToList();
+
             ctx.Pallets.AddRange(pallets);
             ctx.SaveChanges();
 
             var top3 = svc.GetTop3ByMaxBoxExpiration().ToList();
-            // Should pick expiry 4,3,2 then order by volume (volume equal)
+
             top3.Should().HaveCount(3);
-            top3.Select(p => p.Boxes.Max(b => b.ExpirationDate)).Should()
-                .ContainInOrder([new DateTime(2025, 1, 4), new DateTime(2025, 1, 3), new DateTime(2025, 1, 2)]);
+            top3
+                .Select(p => p.Boxes.Max(b => b.ExpirationDate))
+                .Should()
+                .ContainInOrder(
+                    new DateTime(2025, 1, 4),
+                    new DateTime(2025, 1, 3),
+                    new DateTime(2025, 1, 2)
+                );
         }
     }
 }
